@@ -4,29 +4,36 @@ const Car = require('../models/car');
 const router = express.Router();
 
 router.route('/:sid').
-    get((req, res) => {
+    get(async(req, res) => {
         const {sid} = req.params;
-        Car.find({'seller': sid}, (err, cars) =>
-        {
-            if(err) throw err;
-            res.json(cars)
-        })
+
+        let seller;
+        try{seller = await Seller.findById(sid).populate('cars', 'model -_id');}
+        catch(err) {res.send(err)}
+
+        res.json(seller)
 }).
-    post((req,res) => {
+    post(async(req,res) => {
+
         const {sid} = req.params;
+
         let newCar = new Car(req.body);
-        newCar.seller = sid;
-        newCar.save((err) => {
-            if(err) throw err;
 
-            Seller.findById(sid, (err, seller) => {
-                seller.cars.push(newCar)
-                seller.save()
-            });
+        let seller;
+        try {seller = await Seller.findById(sid);}
+        catch(err) {res.send(err)}
 
-            res.json(newCar)
+        newCar.seller = seller;
 
-        });
+        try {await newCar.save();}
+        catch(err) {res.send(err)}
+
+        seller.cars.push(newCar);
+
+        try {await seller.save();}
+        catch(err) {res.send(err)}
+
+        res.json(newCar)
 
 });
 

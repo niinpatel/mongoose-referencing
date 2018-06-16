@@ -17,4 +17,4 @@ app.use('/car',CarRoutes);
 
 
 
-app.listen(port, (err) => {if(err) throw err; console.log(`listening at ${port}`)})
+app.listen(port, (err) => {if(err) throw err; console.log(`listening at ${port}`)});
