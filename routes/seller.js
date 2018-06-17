@@ -3,17 +3,16 @@ const Seller = require('../models/seller');
 const router = express.Router();
 
 router.route('/').
-    get((req, res) => {
-    Seller.find({}, (err, sellers) => {
-        res.json(sellers)
-    })
+    get(async(req, res) => {
+    let seller = await Seller.find({});
+
+    res.json(seller)
+
     }).
-    post((req,res) => {
+    post(async(req,res) => {
     let newSeller = new Seller(req.body);
-    newSeller.save((err) => {
-        if(err) throw err;
-        res.json(newSeller)
-    });
+    await newSeller.save();
+    res.json(newSeller)
     });
 
-module.exports = router
+module.exports = router;
